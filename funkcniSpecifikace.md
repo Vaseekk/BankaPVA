@@ -57,28 +57,115 @@ Program simuluje bankovní systém s podporou běžných, spořicích (včetně 
 ## Uživatelské rozhraní  
 ### Návrh rozhraní  
 - **REQ-012:** Konzolová aplikace: Textové menu s číslovanými položkami (přihlášení, odhlášení, správa účtů, logování).  
-- **REQ-013:** WPF (alternativa): Formuláře s textovými poli, tlačítky („Potvrdit“, „Zrušit“), seznamy (ListBox, DataGrid) pro zobrazení účtů a transakcí.  
 
+#### Uvítací menu (hlavní menu)
+```
+------------------------------------
+Bankovní systém SSPŠ
+------------------------------------
+1. Přihlásit se
+2. Ukončit
+Vyberte možnost (1-2): _
+```
+
+#### Přihlášení
+```
+------------------------------------
+Přihlášení do bankovního systému
+------------------------------------
+Zadejte uživatelské jméno: _
+Zadejte heslo: _
+1. Přihlásit
+2. Zpět
+Vyberte možnost (1-2): _
+```
+
+#### Hlavní menu pro klienty
+```
+------------------------------------
+Můj účet - [Uživatelské jméno]
+------------------------------------
+1. Zobrazit moje účty
+2. Vložit peníze
+3. Vybrat peníze
+4. Převod mezi účty
+5. Historie transakcí
+6. Odhlásit se
+Vyberte možnost (1-6): _
+```
+
+#### Zobrazení účtu
+```
+------------------------------------
+Moje účty
+------------------------------------
+Číslo účtu | Typ účtu       | Zůstatek   | Úroky
+------------------------------------
+1001       | Běžný účet     | 5,000 Kč   | 0,00 Kč
+1002       | Spořicí účet   | 10,000 Kč  | 32,08 Kč
+1003       | Studentský     | 2,000 Kč   | 15,20 Kč
+------------------------------------
+1. Zpět
+Vyberte možnost (1): _
+```
+
+#### Vklad
+```
+------------------------------------
+Vložit peníze
+------------------------------------
+Vyberte účet (zadejte číslo účtu): _
+Zadejte částku k vložení: _
+1. Potvrdit
+2. Zrušit
+Vyberte možnost (1-2): _
+```
+
+#### Menu pro bankéře
+```
+------------------------------------
+Správa účtů - [Uživatelské jméno]
+------------------------------------
+1. Zobrazit všechny účty
+2. Celkový přehled vkladů a úroků
+3. Export dat
+4. Odhlásit se
+Vyberte možnost (1-4): _
+```
+
+#### Admin menu
+```
+------------------------------------
+Správa uživatelů - [Uživatelské jméno]
+------------------------------------
+1. Zobrazit uživatele
+2. Přidat uživatele
+3. Upravit uživatele
+4. Smazat uživatele
+5. Změnit roli
+6. Odhlásit se
+Vyberte možnost (1-6): _
+```
 ### Role uživatelů  
-- **REQ-014:** Klienti: Zobrazení vlastních účtů, transakcí, vkládání/výběry, převody.  
-- **REQ-015:** Bankéři: Přístup ke všem účtům, přehled vkladů/úroků.  
-- **REQ-016:** Administrátoři: Správa uživatelů, oprávnění, zálohování dat.  
+- **REQ-013:** Klienti: Zobrazení vlastních účtů, transakcí, vkládání/výběry, převody.  
+- **REQ-014:** Bankéři: Přístup ke všem účtům, přehled vkladů/úroků.  
+- **REQ-015:** Administrátoři: Správa uživatelů, oprávnění, zálohování dat.  
 
 ## Řešení chybových stavů  
-- **REQ-017:** Nedostatečný zůstatek: „Nedostatek prostředků na účtu. Aktuální zůstatek: [Balance] Kč.“  
-- **REQ-018:** Překročení limitu: „Překročen denní/jednorázový limit výběru. Zkuste to znovu s nižší částkou.“  
-- **REQ-019:** Neplatná transakce: „Neplatná částka. Zadejte kladné číslo.“  
-- **REQ-020:** Chybné přihlášení: „Nesprávné uživatelské jméno nebo heslo. Zkuste to znovu.“  
-- **REQ-021:** Chybové zprávy jsou logovány do `TransactionLog`.  
+- **REQ-016:** Nedostatečný zůstatek: „Nedostatek prostředků na účtu. Aktuální zůstatek: [Balance] Kč.“  
+- **REQ-017:** Překročení limitu: „Překročen denní/jednorázový limit výběru. Zkuste to znovu s nižší částkou.“  
+- **REQ-018:** Neplatná transakce: „Neplatná částka. Zadejte kladné číslo.“  
+- **REQ-019:** Chybné přihlášení: „Nesprávné uživatelské jméno nebo heslo. Zkuste to znovu.“  
+- **REQ-020:** Chybové zprávy jsou logovány do `TransactionLog`.  
 
 ## Databáze a bezpečnost  
-- **REQ-022:** Databáze (SQLite): Tabulky `Users`, `Accounts`, `Transactions` pro uchování dat.  
-- **REQ-023:** Bezpečnost: Hesla hashována pomocí SHA-256 s solí, validace vstupů, omezení přístupu podle rolí.  
+- **REQ-021:** Databáze (SQLite): Tabulky `Users`, `Accounts`, `Transactions` pro uchování dat.  
+- **REQ-022:** Bezpečnost: Hesla hashována pomocí SHA-256 s solí, validace vstupů, omezení přístupu podle rolí.  
 
 ## Počítání úroků  
 ### Spořicí účet  
-- **REQ-024:** Úrok = (vážený průměrný zůstatek * roční úroková sazba) / 12.  
-- **REQ-025:** Příklad: Zůstatek 10 000 Kč (10 dní), 15 000 Kč (15 dní), 12 000 Kč (5 dní) → `(10000 * 10 + 15000 * 15 + 12000 * 5) / 30 = 12833,33 Kč`. Úrok = `12833,33 * 0,03 / 12 = 32,08 Kč`, zaokrouhlený podle bankovních pravidel.  
+- **REQ-023:** Úrok = (vážený průměrný zůstatek * roční úroková sazba) / 12.  
+- **REQ-024:** Příklad: Zůstatek 10 000 Kč (10 dní), 15 000 Kč (15 dní), 12 000 Kč (5 dní) → `(10000 * 10 + 15000 * 15 + 12000 * 5) / 30 = 12833,33 Kč`. Úrok = `12833,33 * 0,03 / 12 = 32,08 Kč`, zaokrouhlený podle bankovních pravidel.  
 
 ### Úvěrový účet  
-- **REQ-026:** Úrok se počítá pouze po skončení bezúročného období (`GracePeriodEnd`), stejným způsobem jako u spořicího účtu, ale s záporným znaménkem.
+- **REQ-025:** Úrok se počítá pouze po skončení bezúročného období (`GracePeriodEnd`), stejným způsobem jako u spořicího účtu, ale s záporným znaménkem.
