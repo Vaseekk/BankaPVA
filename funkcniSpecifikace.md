@@ -38,47 +38,47 @@ Program simuluje bankovní systém s podporou běžných, spořicích (včetně 
 
 ## Technická realizace požadavků  
 ### Struktura tříd  
-- **Základní třída `Account`** (abstraktní): Obsahuje atributy jako `AccountId`, `Balance`, `OwnerId`, `CreationDate` a metody `Deposit`, `Withdraw`, `GetBalance`, `LogTransaction`.  
-- **Třída `CheckingAccount`** (běžný účet): Dědí z `Account`, přidává `LinkedSavingsAccountId` a metodu `TransferToSavings`.  
-- **Třída `SavingsAccount`** (spořicí účet): Dědí z `Account`, obsahuje `InterestRate`, `DailyWithdrawalLimit` a metodu `CalculateMonthlyInterest`.  
-- **Třída `StudentSavingsAccount`** (studentský spořicí účet): Dědí z `SavingsAccount`, přidává `SingleWithdrawalLimit`.  
-- **Třída `CreditAccount`** (úvěrový účet): Dědí z `Account`, obsahuje `CreditLimit`, `InterestRate`, `GracePeriodEnd` a metody `Borrow`, `Repay`, `CalculateMonthlyInterest`.  
-- **Třída `User`**: Spravuje `UserId`, `Username`, `PasswordHash`, `Role` (enum: Client, Banker, Admin) a metody `Authenticate`, `GetAccounts`.  
-- **Třída `BankSystem`**: Koordinuje `Accounts`, `Users`, `TransactionLog` a metody `SimulateTime`, `SaveLogs`.  
+- **REQ-001:** Základní třída `Account` (abstraktní): Obsahuje atributy jako `AccountId`, `Balance`, `OwnerId`, `CreationDate` a metody `Deposit`, `Withdraw`, `GetBalance`, `LogTransaction`.  
+- **REQ-002:** Třída `CheckingAccount` (běžný účet): Dědí z `Account`, přidává `LinkedSavingsAccountId` a metodu `TransferToSavings`.  
+- **REQ-003:** Třída `SavingsAccount` (spořicí účet): Dědí z `Account`, obsahuje `InterestRate`, `DailyWithdrawalLimit` a metodu `CalculateMonthlyInterest`.  
+- **REQ-004:** Třída `StudentSavingsAccount` (studentský spořicí účet): Dědí z `SavingsAccount`, přidává `SingleWithdrawalLimit`.  
+- **REQ-005:** Třída `CreditAccount` (úvěrový účet): Dědí z `Account`, obsahuje `CreditLimit`, `InterestRate`, `GracePeriodEnd` a metody `Borrow`, `Repay`, `CalculateMonthlyInterest`.  
+- **REQ-006:** Třída `User`: Spravuje `UserId`, `Username`, `PasswordHash`, `Role` (enum: Client, Banker, Admin) a metody `Authenticate`, `GetAccounts`.  
+- **REQ-007:** Třída `BankSystem`: Koordinuje `Accounts`, `Users`, `TransactionLog` a metody `SimulateTime`, `SaveLogs`.  
 
 ### Práce s časem  
-- Systém využívá `DateTime.Now` pro reálný čas, ale implementuje `SimulateTime` pro testování (posun času pro výpočet úroků).  
-- Úroky se počítají na konci měsíce (30 dní).  
+- **REQ-008:** Systém využívá `DateTime.Now` pro reálný čas, ale implementuje `SimulateTime` pro testování (posun času pro výpočet úroků).  
+- **REQ-009:** Úroky se počítají na konci měsíce (30 dní).  
 
 ### Transakce a logování  
-- Transakce (vklady, výběry, převody, úroky) jsou logovány do `TransactionLog` s údaji o datu, typu, účtu, částce a novém zůstatku.  
-- Logy lze ukládat do souboru (CSV) nebo databáze (SQLite) pomocí rozhraní `ILogger`.  
+- **REQ-010:** Transakce (vklady, výběry, převody, úroky) jsou logovány do `TransactionLog` s údaji o datu, typu, účtu, částce a novém zůstatku.  
+- **REQ-011:** Logy lze ukládat do souboru (CSV) nebo databáze (SQLite) pomocí rozhraní `ILogger`.  
 
 ## Uživatelské rozhraní  
 ### Návrh rozhraní  
-- **Konzolová aplikace**: Textové menu s číslovanými položkami (přihlášení, odhlášení, správa účtů, logování).  
-- **WPF (alternativa)**: Formuláře s textovými poli, tlačítky („Potvrdit“, „Zrušit“), seznamy (ListBox, DataGrid) pro zobrazení účtů a transakcí.  
+- **REQ-012:** Konzolová aplikace: Textové menu s číslovanými položkami (přihlášení, odhlášení, správa účtů, logování).  
+- **REQ-013:** WPF (alternativa): Formuláře s textovými poli, tlačítky („Potvrdit“, „Zrušit“), seznamy (ListBox, DataGrid) pro zobrazení účtů a transakcí.  
 
 ### Role uživatelů  
-- **Klienti**: Zobrazení vlastních účtů, transakcí, vkládání/výběry, převody.  
-- **Bankéři**: Přístup ke všem účtům, přehled vkladů/úroků.  
-- **Administrátoři**: Správa uživatelů, oprávnění, zálohování dat.  
+- **REQ-014:** Klienti: Zobrazení vlastních účtů, transakcí, vkládání/výběry, převody.  
+- **REQ-015:** Bankéři: Přístup ke všem účtům, přehled vkladů/úroků.  
+- **REQ-016:** Administrátoři: Správa uživatelů, oprávnění, zálohování dat.  
 
 ## Řešení chybových stavů  
-- **Nedostatečný zůstatek**: „Nedostatek prostředků na účtu. Aktuální zůstatek: [Balance] Kč.“  
-- **Překročení limitu**: „Překročen denní/jednorázový limit výběru. Zkuste to znovu s nižší částkou.“  
-- **Neplatná transakce**: „Neplatná částka. Zadejte kladné číslo.“  
-- **Chybné přihlášení**: „Nesprávné uživatelské jméno nebo heslo. Zkuste to znovu.“  
-- Chybové zprávy jsou logovány do `TransactionLog`.  
+- **REQ-017:** Nedostatečný zůstatek: „Nedostatek prostředků na účtu. Aktuální zůstatek: [Balance] Kč.“  
+- **REQ-018:** Překročení limitu: „Překročen denní/jednorázový limit výběru. Zkuste to znovu s nižší částkou.“  
+- **REQ-019:** Neplatná transakce: „Neplatná částka. Zadejte kladné číslo.“  
+- **REQ-020:** Chybné přihlášení: „Nesprávné uživatelské jméno nebo heslo. Zkuste to znovu.“  
+- **REQ-021:** Chybové zprávy jsou logovány do `TransactionLog`.  
 
 ## Databáze a bezpečnost  
-- **Databáze (SQLite)**: Tabulky `Users`, `Accounts`, `Transactions` pro uchování dat.  
-- **Bezpečnost**: Hesla hashována pomocí SHA-256 s solí, validace vstupů, omezení přístupu podle rolí.  
+- **REQ-022:** Databáze (SQLite): Tabulky `Users`, `Accounts`, `Transactions` pro uchování dat.  
+- **REQ-023:** Bezpečnost: Hesla hashována pomocí SHA-256 s solí, validace vstupů, omezení přístupu podle rolí.  
 
 ## Počítání úroků  
 ### Spořicí účet  
-- Úrok = (vážený průměrný zůstatek * roční úroková sazba) / 12.  
-- Příklad: Zůstatek 10 000 Kč (10 dní), 15 000 Kč (15 dní), 12 000 Kč (5 dní) → `(10000 * 10 + 15000 * 15 + 12000 * 5) / 30 = 12833,33 Kč`. Úrok = `12833,33 * 0,03 / 12 = 32,08 Kč`, zaokrouhlený podle bankovních pravidel.  
+- **REQ-024:** Úrok = (vážený průměrný zůstatek * roční úroková sazba) / 12.  
+- **REQ-025:** Příklad: Zůstatek 10 000 Kč (10 dní), 15 000 Kč (15 dní), 12 000 Kč (5 dní) → `(10000 * 10 + 15000 * 15 + 12000 * 5) / 30 = 12833,33 Kč`. Úrok = `12833,33 * 0,03 / 12 = 32,08 Kč`, zaokrouhlený podle bankovních pravidel.  
 
 ### Úvěrový účet  
-- Úrok se počítá pouze po skončení bezúročného období (`GracePeriodEnd`), stejným způsobem jako u spořicího účtu, ale s záporným znaménkem.
+- **REQ-026:** Úrok se počítá pouze po skončení bezúročného období (`GracePeriodEnd`), stejným způsobem jako u spořicího účtu, ale s záporným znaménkem.
