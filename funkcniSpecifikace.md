@@ -160,7 +160,7 @@ Vyberte možnost (1-6): _
 - **REQ-017:** Překročení limitu: „Překročen denní/jednorázový limit výběru. Zkuste to znovu s nižší částkou.“  
 - **REQ-018:** Neplatná transakce: „Neplatná částka. Zadejte kladné číslo.“  
 - **REQ-019:** Chybné přihlášení: „Nesprávné uživatelské jméno nebo heslo. Zkuste to znovu.“  
-- **REQ-020:** Chybové zprávy jsou logovány do `TransactionLog`.  
+- **REQ-020:** Chybové zprávy jsou logovány do `ErrorLog`.  
 
 ## Databáze a bezpečnost  
 - **REQ-021:** Databáze (SQLite): Tabulky `Users`, `Accounts`, `Transactions` pro uchování dat.  
