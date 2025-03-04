@@ -26,8 +26,8 @@
 * **Kontakt:** bohdanecky.va.2022@skola.ssps.cz  
 
 ## Celková hrubá architektura  
-* **Jazyk aplikace:** Čeština (s možností angličtiny)  
-* **Spuštění:** Konzolová aplikace (C# a .NET) nebo desktopová aplikace (WPF)  
+* **Jazyk aplikace:** Angličtina 
+* **Spuštění:** Konzolová aplikace (C# a .NET)
 * **Databáze:** SQL databáze (SQLite)  
 
 ## Popis programu  
