@@ -189,7 +189,7 @@ Vyberte možnost (1-6): _
     - `Type` (TEXT NOT NULL): Typ transakce (Deposit, Withdraw, Transfer, Interest, Borrow, Repay).
     - `Amount` (DECIMAL NOT NULL): Částka transakce.
     - `NewBalance` (DECIMAL NOT NULL): Nový zůstatek po transakci.
-- **REQ-022:** Bezpečnost: Hesla hashována pomocí SHA-256 s solí, validace vstupů, omezení přístupu podle rolí.  
+- **REQ-022:** Bezpečnost: Hesla hashována pomocí SHA-256 se saltem, validace vstupů, omezení přístupu podle rolí.  
   - **Knihovny pro hashování**: Použijeme `System.Security.Cryptography` pro hashování hesel pomocí SHA-256. Příklad implementace:
     ```csharp
     using System.Security.Cryptography;
@@ -220,7 +220,7 @@ Vyberte možnost (1-6): _
 ## Počítání úroků  
 ### Spořicí účet  
 - **REQ-023:** Úrok = (vážený průměrný zůstatek * roční úroková sazba) / 12.  
-- **REQ-024:** Příklad: Zůstatek 10 000 Kč (10 dní), 15 000 Kč (15 dní), 12 000 Kč (5 dní) → `(10000 * 10 + 15000 * 15 + 12000 * 5) / 30 = 12833,33 Kč`. Úrok = `12833,33 * 0,03 / 12 = 32,08 Kč`, zaokrouhlený podle bankovních pravidel.  
+- **Příklad:** Zůstatek 10 000 Kč (10 dní), 15 000 Kč (15 dní), 12 000 Kč (5 dní) → `(10000 * 10 + 15000 * 15 + 12000 * 5) / 30 = 12833,33 Kč`. Úrok = `12833,33 * 0,03 / 12 = 32,08 Kč`, zaokrouhlený podle bankovních pravidel.  
 
 ### Úvěrový účet  
-- **REQ-025:** Úrok se počítá pouze po skončení bezúročného období (`GracePeriodEnd`), stejným způsobem jako u spořicího účtu, ale s záporným znaménkem.
+- **REQ-024:** Úrok se počítá pouze po skončení bezúročného období (`GracePeriodEnd`), stejným způsobem jako u spořicího účtu, ale s záporným znaménkem.
