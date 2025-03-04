@@ -31,7 +31,7 @@
 * **Databáze:** SQL databáze (SQLite)  
 
 ## Popis programu  
-Program simuluje bankovní systém s podporou běžných, spořicích (včetně studentských) a úvěrových účtů. Umožňuje klientům provádět transakce, sledovat zůstatky a úroky, zatímco bankéři mají přístup k dohledovým funkcím a administrátoři spravují uživatelská oprávnění. Systém zahrnuje logování transakcí, automatizované výpočty úroků a bezpečné ukládání citlivých dat. Implementace je realizována v C# s využitím .NET a SQLite pro správu dat.  
+Program simuluje bankovní systém s podporou běžných, spořicích (včetně studentských) a úvěrových účtů. Umožňuje klientům provádět transakce, sledovat zůstatky a úroky, zatímco bankéři mají přístup k dohledovým funkcím a administrátoři spravují uživatelská oprávnění. Systém zahrnuje logování transakcí do textového souboru `logs` ve formátu plain text, automatizované výpočty úroků a bezpečné ukládání citlivých dat. Implementace je realizována v C# s využitím .NET a SQLite pro správu dat.  
 
 ## Účel aplikace  
 Účelem aplikace je vytvořit realistickou simulaci bankovního systému, která umožní studentům procvičit principy objektově orientovaného programování a získat praktické zkušenosti s vývojem komplexního systému.  
@@ -52,7 +52,7 @@ Program simuluje bankovní systém s podporou běžných, spořicích (včetně 
 
 ### Transakce a logování  
 - **REQ-010:** Transakce (vklady, výběry, převody, úroky) jsou logovány do `TransactionLog` s údaji o datu, typu, účtu, částce a novém zůstatku.  
-- **REQ-011:** Logy lze ukládat do souboru (CSV) nebo databáze (SQLite) pomocí rozhraní `ILogger`.  
+- **REQ-011:** Logy jsou ukládány do textového souboru `logs` ve formátu plain text (např. „[Datum] [Typ]: [Účet] [Částka] [Nový zůstatek]“).  
 
 ## Uživatelské rozhraní  
 ### Návrh rozhraní  
@@ -89,9 +89,11 @@ Můj účet - [Uživatelské jméno]
 2. Vložit peníze
 3. Vybrat peníze
 4. Převod mezi účty
-5. Historie transakcí
-6. Odhlásit se
-Vyberte možnost (1-6): _
+5. Požádat o půjčku
+6. Splátka půjčky
+7. Historie transakcí
+8. Odhlásit se
+Vyberte možnost (1-8): _
 ```
 
 #### Zobrazení účtu
@@ -99,11 +101,11 @@ Vyberte možnost (1-6): _
 ------------------------------------
 Moje účty
 ------------------------------------
-Číslo účtu | Typ účtu       | Zůstatek   | Úroky
+Číslo účtu | Typ účtu       | Zůstatek   | Úroky      | Dluh (při úvěru)
 ------------------------------------
-1001       | Běžný účet     | 5,000 Kč   | 0,00 Kč
-1002       | Spořicí účet   | 10,000 Kč  | 32,08 Kč
-1003       | Studentský     | 2,000 Kč   | 15,20 Kč
+1001       | Běžný účet     | 5,000 Kč   | 0,00 Kč    | 0,00 Kč
+1002       | Spořicí účet   | 10,000 Kč  | 32,08 Kč   | 0,00 Kč
+1003       | Úvěrový účet   | -2,000 Kč  | -50,00 Kč  | 2,000 Kč
 ------------------------------------
 1. Zpět
 Vyberte možnost (1): _
@@ -128,9 +130,10 @@ Správa účtů - [Uživatelské jméno]
 ------------------------------------
 1. Zobrazit všechny účty
 2. Celkový přehled vkladů a úroků
-3. Export dat
-4. Odhlásit se
-Vyberte možnost (1-4): _
+3. Provést půjčku pro klienta
+4. Export dat
+5. Odhlásit se
+Vyberte možnost (1-5): _
 ```
 
 #### Admin menu
@@ -146,9 +149,10 @@ Správa uživatelů - [Uživatelské jméno]
 6. Odhlásit se
 Vyberte možnost (1-6): _
 ```
+
 ### Role uživatelů  
-- **REQ-013:** Klienti: Zobrazení vlastních účtů, transakcí, vkládání/výběry, převody.  
-- **REQ-014:** Bankéři: Přístup ke všem účtům, přehled vkladů/úroků.  
+- **REQ-013:** Klienti: Zobrazení vlastních účtů, transakcí, vkládání/výběry, převody, žádosti o půjčky a splátky půjček.  
+- **REQ-014:** Bankéři: Přístup ke všem účtům, přehled vkladů/úroků, možnost provést půjčku pro klienta.  
 - **REQ-015:** Administrátoři: Správa uživatelů, oprávnění, zálohování dat.  
 
 ## Řešení chybových stavů  
@@ -160,7 +164,58 @@ Vyberte možnost (1-6): _
 
 ## Databáze a bezpečnost  
 - **REQ-021:** Databáze (SQLite): Tabulky `Users`, `Accounts`, `Transactions` pro uchování dat.  
+  - **Tabulka `Users`**:
+    - `UserId` (INTEGER PRIMARY KEY AUTOINCREMENT): Jedinečné ID uživatele.
+    - `Username` (TEXT NOT NULL UNIQUE): Uživatelské jméno.
+    - `PasswordHash` (TEXT NOT NULL): Hashované heslo (SHA-256).
+    - `Salt` (TEXT NOT NULL): Náhodná sůl pro hashování.
+    - `Role` (TEXT NOT NULL): Role uživatele (Client, Banker, Admin).
+    - `CreatedAt` (DATETIME DEFAULT CURRENT_TIMESTAMP): Datum vytvoření účtu.
+  - **Tabulka `Accounts`**:
+    - `AccountId` (INTEGER PRIMARY KEY AUTOINCREMENT): Jedinečné ID účtu.
+    - `OwnerId` (INTEGER NOT NULL, FOREIGN KEY (UserId)): ID vlastníka účtu.
+    - `Type` (TEXT NOT NULL): Typ účtu (Checking, Savings, StudentSavings, Credit).
+    - `Balance` (DECIMAL NOT NULL): Aktuální zůstatek.
+    - `CreationDate` (DATETIME DEFAULT CURRENT_TIMESTAMP): Datum vytvoření účtu.
+    - `InterestRate` (DECIMAL): Roční úroková sazba (pro spořicí/úvěrové účty, NULL pro běžné).
+    - `DailyWithdrawalLimit` (DECIMAL): Denní limit výběru (pro spořicí účty, NULL pro jiné).
+    - `SingleWithdrawalLimit` (DECIMAL): Jednorázový limit výběru (pro studentské účty, NULL pro jiné).
+    - `CreditLimit` (DECIMAL): Úvěrový rámec (pro úvěrové účty, NULL pro jiné).
+    - `GracePeriodEnd` (DATETIME): Konec bezúročného období (pro úvěrové účty, NULL pro jiné).
+  - **Tabulka `Transactions`**:
+    - `TransactionId` (INTEGER PRIMARY KEY AUTOINCREMENT): Jedinečné ID transakce.
+    - `AccountId` (INTEGER NOT NULL, FOREIGN KEY (AccountId)): ID účtu.
+    - `DateTime` (DATETIME DEFAULT CURRENT_TIMESTAMP): Datum a čas transakce.
+    - `Type` (TEXT NOT NULL): Typ transakce (Deposit, Withdraw, Transfer, Interest, Borrow, Repay).
+    - `Amount` (DECIMAL NOT NULL): Částka transakce.
+    - `NewBalance` (DECIMAL NOT NULL): Nový zůstatek po transakci.
 - **REQ-022:** Bezpečnost: Hesla hashována pomocí SHA-256 s solí, validace vstupů, omezení přístupu podle rolí.  
+  - **Knihovny pro hashování**: Použijeme `System.Security.Cryptography` pro hashování hesel pomocí SHA-256. Příklad implementace:
+    ```csharp
+    using System.Security.Cryptography;
+    using System.Text;
+
+    public string HashPassword(string password, string salt)
+    {
+        using (var sha256 = SHA256.Create())
+        {
+            string saltedPassword = password + salt;
+            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(saltedPassword));
+            return Convert.ToBase64String(hashedBytes);
+        }
+    }
+
+    public string GenerateSalt()
+    {
+        byte[] randomBytes = new byte[16];
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(randomBytes);
+        }
+        return Convert.ToBase64String(randomBytes);
+    }
+    ```
+  - Hesla budou uložena v `PasswordHash` spolu s náhodnou solí (uloženou v samostatném sloupci `Salt` v tabulce `Users`), což zajistí bezpečnost proti útokům jako rainbow table.
 
 ## Počítání úroků  
 ### Spořicí účet  
